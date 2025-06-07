@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antarmuka Pencarian Berita</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="search-box">
+    <h1>Berita Olahraga 🔍</h1>
+    <form method="post">
+        <input type="text" name="query" placeholder="Contoh: milan and kalah" required>
+    </form>
+
+    {% if results %}
+        <h2>Hasil Pencarian:</h2>
+        {% for idx in results %}
+            <div class="result">
+                <h3>{{ df[idx]['Judul'] }}</h3>
+                <p>{{ df[idx]['Isi'][:200] }}...</p>
+            </div>
+        {% endfor %}
+    {% elif results is not none %}
+        <p>Tidak ditemukan hasil.</p>
+    {% endif %}
+</div>
+
+<div class="footer">
+    &copy; 2025 - Sistem Pencarian Boolean Berita Olahraga
+</div>
+
+</body>
+</html>

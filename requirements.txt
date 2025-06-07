@@ -1,6 +1,0 @@
-streamlit
-newspaper3k
-requests
-beautifulsoup4
-pandas
-lxml
