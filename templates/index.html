@@ -3,33 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antarmuka Pencarian Berita</title>
+    <title>Pencarian Berita Olahraga</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div class="search-box">
-    <h1>Berita Olahraga 🔍</h1>
-    <form method="post">
-        <input type="text" name="query" placeholder="Contoh: milan and kalah" required>
-    </form>
+    <header class="header">
+        <div class="container">
+            <h1>Pencarian Berita Olahraga ⚽</h1>
+            <p>Gunakan operator <strong>AND</strong>, <strong>OR</strong>, dan <strong>NOT</strong> untuk pencarian boolean.</p>
+            <form method="post" class="search-form">
+                <input type="text" name="query" placeholder="Contoh: ronaldo AND portugal NOT messi" value="{{ query if query else '' }}">
+                <button type="submit">Cari</button>
+            </form>
+        </div>
+    </header>
 
-    {% if results %}
-        <h2>Hasil Pencarian:</h2>
-        {% for idx in results %}
-            <div class="result">
-                <h3>{{ df[idx]['Judul'] }}</h3>
-                <p>{{ df[idx]['Isi'][:200] }}...</p>
+    <main class="container content">
+        {% if error %}
+            <div class="error-message">
+                <h3>Oops! Terjadi Kesalahan</h3>
+                <p>{{ error }}</p>
             </div>
-        {% endfor %}
-    {% elif results is not none %}
-        <p>Tidak ditemukan hasil.</p>
-    {% endif %}
-</div>
+        {% endif %}
 
-<div class="footer">
-    &copy; 2025 - Sistem Pencarian Boolean Berita Olahraga
-</div>
+        {% if results is not none %}
+            <h2 class="results-title">Hasil Pencarian untuk "{{ query }}" ({{ results|length }} berita ditemukan)</h2>
+            {% if results %}
+                <div class="results-list">
+                    {% for item in results %}
+                        <article class="news-card">
+                            <div class="card-header">
+                                <span class="news-label">{{ item['Label'] }}</span>
+                                <a href="{{ item['Url'] }}" target="_blank" class="news-title-link">
+                                    <h3 class="news-title">{{ item['Judul'] }}</h3>
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <p class="news-snippet">{{ item['Isi'][:150] | safe }}...</p>
+                                <div class="news-content-full" id="content-{{ item.original_index }}">
+                                    <p>{{ item['Isi'] | safe }}</p>
+                                </div>
+                                <button class="toggle-button" id="button-{{ item.original_index }}" onclick="toggleContent({{ item.original_index }})">
+                                    Baca Selengkapnya
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Tidak ada berita yang cocok dengan kueri Anda.</p>
+            {% endif %}
+        
+        {% else %}
+            <h2 class="results-title">Berita Terbaru</h2>
+             <div class="results-list">
+                {% for item in initial_data %}
+                    <article class="news-card">
+                        <div class="card-header">
+                            <span class="news-label">{{ item['Label'] }}</span>
+                            <a href="{{ item['Url'] }}" target="_blank" class="news-title-link">
+                                <h3 class="news-title">{{ item['Judul'] }}</h3>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <p class="news-snippet">{{ item['Isi'][:150] | safe }}...</p>
+                            <div class="news-content-full" id="content-{{ item.original_index }}">
+                                <p>{{ item['Isi'] | safe }}</p>
+                            </div>
+                            <button class="toggle-button" id="button-{{ item.original_index }}" onclick="toggleContent({{ item.original_index }})">
+                                Baca Selengkapnya
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 - Sistem Pencarian Boolean Profesional</p>
+    </footer>
+
+    <script>
+        function toggleContent(id) {
+            const content = document.getElementById('content-' + id);
+            const button = document.getElementById('button-' + id);
+
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                button.textContent = 'Baca Selengkapnya';
+            } else {
+                content.classList.add('show');
+                button.textContent = 'Tutup';
+            }
+        }
+    </script>
 
 </body>
 </html>
